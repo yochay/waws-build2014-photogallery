@@ -1,0 +1,61 @@
+﻿@section Scripts {
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+}
+
+@{
+    var photoId = UrlData[0].AsInt();
+
+    var db = Database.Open("PhotoGallery");
+
+    var photo = db.QuerySingle("SELECT * FROM Photos WHERE Id = @0", photoId);
+    if (photo == null) 
+    {
+        Response.SetStatus(HttpStatusCode.NotFound);
+        return;        
+    }
+
+    WebSecurity.RequireUser(photo.UserId);
+
+    Page.Title = "Edit Photo - " + photo.FileTitle;
+
+    Validation.RequireField("fileTitle", "You must specify a name");
+    Validation.RequireField("description", "You must specify a description");
+
+    if (IsPost && Validation.IsValid()) 
+    {
+        var fileTitle = Request["FileTitle"];
+        var description = Request["Description"];
+        
+        db.Execute("UPDATE Photos SET FileTitle = @0, Description= @1 WHERE Id = @2", fileTitle, description, photoId);
+        Response.Redirect(Href("View", photo.Id));
+    }
+}
+
+<h1>Edit @photo.FileTitle</h1>
+
+<section id="sidebar">
+    <form method="post">
+        <fieldset class="no-legend">
+            <legend>Edit @photo.FileTitle</legend>
+            <ol>
+                <li>
+                    <label for="fileTitle">Name:</label>
+                    <input type="text" name="fileTitle" title="Photo name" value="@photo.FileTitle" placeholder="Photo Name" @Validation.For("fileTitle") />
+                    @Html.ValidationMessage("FileTitle")
+                </li>
+                <li>
+                    <label for="description">Description:</label>
+                    <textarea name="description" title="Photo description" rows="4" cols="30" placeholder="Photo description" @Validation.For("description") >@photo.Description</textarea>
+                    @Html.ValidationMessage("Description")
+                </li>
+            </ol>
+            <p class="form-actions" data-role="controlgroup" data-type="horizontal">
+                <input type="submit" value="Save Changes" title="Save changes" />
+                <a data-role="button" href="~/Photo/View/@photoId" title="Cancel changes">Cancel</a>
+            </p>
+        </fieldset>
+    </form>
+</section>
+
+<img alt="@Html.AttributeEncode(photo.FileTitle)" src="~/Photo/Thumbnail/@photo.Id?size=large" />

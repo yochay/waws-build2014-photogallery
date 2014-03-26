@@ -1,0 +1,34 @@
+﻿@{
+    Page.Title = "View All Tags";
+
+    var db = Database.Open("PhotoGallery");
+
+    var tags = db.Query(@"SELECT Tags_TagName AS TagName, COUNT(*) AS TagCount 
+                          FROM Photos_Tags 
+                          GROUP BY Tags_TagName
+                          ORDER BY Tags_TagName").ToList();
+}
+<hgroup>
+    <h1>Tags</h1>
+    @if (tags.Count == 1) 
+    {
+        <h2>There is one tag.</h2>
+    }
+    else
+    {
+        <h2>There are @tags.Count tags.</h2>
+    }
+</hgroup>
+<ul class="thumbnails galleries" data-role="listview">
+    @foreach (var tag in tags)
+    {
+        <li class="tag">
+            <a href="~/Tag/View/@tag.TagName" title="@tag.TagName">
+                <img alt="Images from @tag.TagName" src="~/Tag/Thumbnail/@tag.TagName" class="thumbnail-no-border" />
+                <span class="below-image">@tag.TagName</span>                
+                <span class="image-overlay hide-from-mobile">@tag.TagName photo(s)</span>
+                <span class="ui-li-count hide-from-desktop">@tag.TagCount</span>
+            </a>
+        </li>
+    } 
+</ul>

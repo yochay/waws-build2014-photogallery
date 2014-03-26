@@ -1,0 +1,69 @@
+﻿@{
+    WebSecurity.RequireAuthenticatedUser();
+
+    var galleryId = UrlData[0].AsInt();
+
+    var db = Database.Open("PhotoGallery");
+
+    var gallery = db.QuerySingle("SELECT * FROM Galleries WHERE Id = @0", galleryId);
+    if (gallery == null)
+    {
+        Response.SetStatus(HttpStatusCode.NotFound);
+        return;
+    }
+
+    Page.Title = "Upload Photo to Gallery - " + gallery.Name;
+    if (IsPost)
+    {
+        var numFiles = Request.Files.Count;
+        if(numFiles == 0)
+        {
+            ModelState.AddError("fileUpload", "Please specify at least one photo to upload.");
+        } 
+        else 
+        {
+            for (int i = 0; i < numFiles; i++)
+            {
+                var file = Request.Files[i];
+                if (file.ContentLength > 0)
+                {
+                    var fileUpload = new WebImage(file.InputStream);
+                    var fileTitle = Path.GetFileNameWithoutExtension(file.FileName).Trim();
+                    if (fileTitle.IsEmpty())
+                    {
+                        fileTitle = "Untitled";
+                    }
+                    var fileExtension = Path.GetExtension(file.FileName).Trim();
+                    var fileBytes = fileUpload.GetBytes();
+                    db.Execute(@"INSERT INTO Photos
+                        (GalleryId, UserId, Description, FileTitle, FileExtension, ContentType, FileSize, UploadDate, FileContents) VALUES 
+                        (@0, @1, @2, @3, @4, @5, @6, @7, @8)", galleryId, WebSecurity.CurrentUserId, "", fileTitle, fileExtension,
+                    fileUpload.ImageFormat, fileBytes.Length, DateTime.Now, fileBytes);
+                }
+            }
+            Response.Redirect(Href("~/Photo/View", db.GetLastInsertId()));
+        }
+    }
+}
+<h1>Upload Photo</h1>
+
+<p>
+    The photo you upload will be placed in the
+    <a class="italic" href="~/View/@galleryId" title="@gallery.Name">@gallery.Name</a> gallery.
+</p>
+
+<form method="post" enctype="multipart/form-data">
+    @Html.ValidationSummary("Unable to upload:")
+    <fieldset class="no-legend">
+        <legend>Upload Photo</legend>
+        @FileUpload.GetHtml(addText: "Add more files", uploadText: "Upload", includeFormTag: false)
+        <p class="form-actions">
+            <input type="submit" value="Upload" title="Upload photo" />
+            <a href="~/View/@galleryId" title="Return to the &quot;@gallery.Name&quot; gallery.">Cancel</a>
+        </p>
+    </fieldset>
+</form>
+
+<p class="message info">
+    The default file size is limited to 4MB. To change this you will need to update the 'HttpRuntimeSection/MaxRequestLength' section in web.config. 
+</p>

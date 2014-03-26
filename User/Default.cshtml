@@ -1,0 +1,61 @@
+﻿@section Scripts {
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+}
+
+@{
+    WebSecurity.RequireAuthenticatedUser();
+
+    var db = Database.Open("PhotoGallery");
+
+    var user = db.QuerySingle("SELECT UserId, DisplayName, Bio FROM UserProfiles WHERE UserId = @0", WebSecurity.CurrentUserId);
+
+    Page.Title = "Edit Profile - " + user.DisplayName;
+
+    Validation.RequireField("displayName", "Please enter a display name");
+
+    string displayName = null;
+    if (IsPost && Validation.IsValid())
+    {
+        displayName = Request["displayName"].Trim();
+        if (displayName.IsEmpty())
+        {
+            displayName = User.Identity.Name;
+        }
+        var bio = Request["bio"].Trim();
+
+        db.Execute("UPDATE UserProfiles SET DisplayName = @0, Bio = @1 WHERE UserId = @2", displayName, bio, WebSecurity.CurrentUserId);
+
+        Response.Redirect(Href("~/User/View",user.UserId));
+    }
+}
+<h1>Edit Profile</h1>
+
+<section id="profileForm">
+    <header>
+        <p>
+            Welcome back, @user.DisplayName.  You may use the below form to change your display name (shown in comments)
+            and biography (shown on your <a href="~/User/View/@WebSecurity.CurrentUserId" title="View your public profile">public profile</a>).
+        </p>
+    </header>
+
+    <form method="post">
+        <fieldset class="no-legend" action="">
+            <legend>Edit Profile</legend>
+            <ol>
+                <li>
+                    <label for="displayName">Display name:</label>
+                    <input type="text" id="displayName" name="displayName" title="Change display name" placeholder="Display name" value="@(displayName ?? user.DisplayName)" @Validation.For("displayName") />
+                    @Html.ValidationMessage("displayName")
+                </li>
+                <li>
+                    <label for="bio">Bio:</label>
+                    <textarea id="bio" name="bio" title="Change bio" rows="4" cols="50" placeholder="Biography">@user.Bio</textarea>
+                </li>
+            </ol>
+            <p class="form-actions">
+                <input type="submit" value="Save" title="Save Changes" />
+            </p>
+        </fieldset>
+    </form>
+</section>

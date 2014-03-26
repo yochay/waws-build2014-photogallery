@@ -1,0 +1,71 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>@Page.Title</title>
+        <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"> 
+        <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+        <script src="~/Scripts/modernizr-2.5.3.js"></script>
+        <link rel="stylesheet" href="~/Content/jquery.mobile-1.0.min.css" />
+        <link rel="stylesheet" href="~/Content/Site.mobile.css" />
+        <script src="~/Scripts/modernizr-2.5.3.js"></script>
+        <script src="~/Scripts/jquery-1.7.1.min.js"></script>
+        <script src="~/Scripts/jquery.mobile-1.0.min.js"></script>
+
+        <script type="text/javascript">
+            $(document).live("pagechange", function(e, data) {
+                var root = $(location).attr('hash').split("/")[1];
+                if(root == "User") {
+                    $(this).find('div[data-role="navbar"] a[data-id="user"]').addClass('ui-btn-active');
+                    $(this).find('div[data-role="navbar"] a[data-id="tags"]').removeClass('ui-btn-active');
+                    $(this).find('div[data-role="navbar"] a[data-id="galleries"]').removeClass('ui-btn-active');
+                }
+                else if(root == "Tag") {
+                    $(this).find('div[data-role="navbar"] a[data-id="tags"]').addClass('ui-btn-active');
+                    $(this).find('div[data-role="navbar"] a[data-id="user"]').removeClass('ui-btn-active');
+                    $(this).find('div[data-role="navbar"] a[data-id="galleries"]').removeClass('ui-btn-active');
+                }
+                else {
+                    $(this).find('div[data-role="navbar"] a[data-id="galleries"]').addClass('ui-btn-active');
+                    $(this).find('div[data-role="navbar"] a[data-id="user"]').removeClass('ui-btn-active');
+                    $(this).find('div[data-role="navbar"] a[data-id="tags"]').removeClass('ui-btn-active');
+                }
+            });   
+        </script>
+
+    </head>
+    <body>
+        <div id="page" class="group" data-role="page">
+            <div data-role="header" data-position="fixed" data-theme="c">
+                <div data-role="header" data-theme="c">
+                    <h1>Photo Gallery</h1>
+                </div>
+
+                @if (WebSecurity.IsAuthenticated) {
+                    <a href="~/Account/Logout" class="ui-btn-right">Logout</a>
+                } else {
+                    <a href="~/Account/Login" class="ui-btn-right">Login</a>
+                }
+
+                <div data-role="navbar">
+                    <ul id="menu">
+                        <li class="galleries"><a data-id="galleries" href="~/">Galleries</a></li>
+                        <li class="tags"><a data-id="tags" href="~/Tag">Tags</a></li>
+                        <li class="account"><a data-id="user" href="~/User">Account</a></li>                    
+                    </ul>
+                </div> <!-- \nav -->
+            </div> <!-- \header -->
+
+
+            <div id="page" data-role="content">
+                @RenderBody()
+                @RenderSection("Scripts", required: false)
+            </div>
+
+
+            <div id="footer" data-role="footer" data-theme="c" data-position="fixed">
+                &copy; @DateTime.Now.Year - Photo Gallery 
+            </div>
+        </div>
+    </body>
+</html>

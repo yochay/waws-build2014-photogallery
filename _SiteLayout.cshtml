@@ -1,0 +1,43 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>@Page.Title</title>
+        <link href="~/Content/Site.css" rel="stylesheet" />
+        <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+        <script src="~/Scripts/modernizr-2.5.3.js"></script>
+        <script src="~/Scripts/jquery-1.7.1.min.js"></script>
+    </head>
+    <body>
+        <header id="banner">
+            <p class="site-title"><a href="~/">Photo Gallery</a></p>
+            <nav id="menu">
+                <ul>
+                    <li class="galleries"><a href="~/" title="Galleries">Galleries</a></li>
+                    <li class="tags"><a href="~/Tag" title="Tags">Tags</a></li>
+                    <li class="account"><a href="~/User" title="Account">Account</a></li>
+                </ul>
+            </nav>
+            <div id="login">
+                @if (WebSecurity.IsAuthenticated)
+                {
+                    <span>
+                        Welcome <strong>@WebSecurity.CurrentUserName</strong>!
+                        <a href="~/Account/Logout" title="Logout">Logout</a>
+                    </span>
+                }
+                else
+                {
+                    <a href="~/Account/Login" title="Login">Login</a>
+                }
+            </div>
+        </header>
+        <div id="body">
+            @RenderBody()
+        </div>
+        <footer id="site-footer">
+            &copy; @DateTime.Now.Year - Photo Gallery 
+        </footer>
+        @RenderSection("Scripts", required: false)
+    </body>
+</html>

@@ -1,0 +1,47 @@
+﻿@{
+    var galleryId = UrlData[0].AsInt();
+
+    var db = Database.Open("PhotoGallery");
+
+    var gallery = db.QuerySingle("SELECT * FROM Galleries WHERE Id = @0", galleryId);
+    if (gallery == null)
+    {
+        Response.SetStatus(HttpStatusCode.NotFound);
+        return;
+    }
+
+    // Found a match - so show all its photos
+    var photos = db.Query("SELECT Id, FileTitle FROM Photos WHERE GalleryId = @0", galleryId).ToList();
+
+    Page.Title = "Gallery - " + gallery.Name;
+}
+<hgroup>
+    <h1>@gallery.Name</h1>
+    @if (photos.Count == 1)
+    {
+        <h2>This gallery contains one photo.</h2>
+    }
+    else
+    {
+        <h2>This gallery contains @photos.Count photos.</h2>
+    }
+</hgroup>
+
+<ul class="thumbnails" data-role="listview">
+    @foreach (var photo in photos)
+    {
+        <li>
+            <a href="~/Photo/View/@photo.Id" title="View @photo.FileTitle">
+                <img alt="thumbnail of @photo.FileTitle" src="~/Photo/Thumbnail/@photo.Id" class="thumbnail-border" />
+                <span class="image-overlay hide-from-mobile">@photo.FileTitle</span>
+                <span class="below-image hide-from-desktop">@photo.FileTitle</span>
+            </a>
+        </li>
+    }
+</ul>
+@if (WebSecurity.IsAuthenticated)
+{
+    <p class="actions hide-from-mobile">
+        <a href="~/Upload/@galleryId" title="Upload a Photo">Upload a Photo</a>
+    </p>
+}
