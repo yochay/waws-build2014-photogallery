@@ -9,18 +9,25 @@ public static class RequestExtensions
 {
     public static string GetCurrentUser(this HttpRequestBase request, HttpResponseBase response = null)
     {
-        var userName = String.Empty;
-        if (request.Cookies["GuidUser"] != null)
+        string userName;
+        try
         {
-            userName = request.Cookies["GuidUser"].Value;
-            var db = Database.Open("PhotoGallery");
-            var guidUser = db.QuerySingle("SELECT * FROM GuidUsers WHERE UserName = @0", userName);
-            if (guidUser == null || guidUser.TotalLikes > 5)
+            if (request.Cookies["GuidUser"] != null)
+            {
+                userName = request.Cookies["GuidUser"].Value;
+                var db = Database.Open("PhotoGallery");
+                var guidUser = db.QuerySingle("SELECT * FROM GuidUsers WHERE UserName = @0", userName);
+                if (guidUser == null || guidUser.TotalLikes > 5)
+                {
+                    userName = CreateNewUser();
+                }
+            }
+            else
             {
                 userName = CreateNewUser();
             }
         }
-        else
+        catch (Exception)
         {
             userName = CreateNewUser();
         }

@@ -36,9 +36,9 @@
                     var fileBytes = fileUpload.GetBytes();
                     guid = Guid.NewGuid();
                     db.Execute(@"INSERT INTO Photos
-                        (Id, GalleryId, UserName, Description, FileTitle, FileExtension, ContentType, FileSize, UploadDate, FileContents) VALUES 
-                        (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9)", guid.ToString(), galleryId, Request.GetCurrentUser(Response), "", fileTitle, fileExtension,
-                    fileUpload.ImageFormat, fileBytes.Length, DateTime.Now, fileBytes);
+                        (Id, GalleryId, UserName, Description, FileTitle, FileExtension, ContentType, FileSize, UploadDate, FileContents, Likes) VALUES 
+                        (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10)", guid.ToString(), galleryId, Request.GetCurrentUser(Response), "", fileTitle, fileExtension,
+                    fileUpload.ImageFormat, fileBytes.Length, DateTime.Now, fileBytes, 0);
                 }
             }
             Response.Redirect(Href("~/Photo/View", guid.ToString()));

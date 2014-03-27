@@ -41,16 +41,9 @@
                     <h1>Photo Gallery</h1>
                 </div>
 
-                @if (WebSecurity.IsAuthenticated) {
-                    <a href="~/Account/Logout" class="ui-btn-right">Logout</a>
-                } else {
-                    <a href="~/Account/Login" class="ui-btn-right">Login</a>
-                }
-
                 <div data-role="navbar">
                     <ul id="menu">
                         <li class="galleries"><a data-id="galleries" href="~/">Galleries</a></li>
-                        <li class="tags"><a data-id="tags" href="~/Tag">Tags</a></li>
                         <li class="account"><a data-id="user" href="~/User">Account</a></li>                    
                     </ul>
                 </div> <!-- \nav -->

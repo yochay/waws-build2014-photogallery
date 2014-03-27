@@ -11,7 +11,7 @@
     }
 
     // Found a match - so show all its photos
-    var photos = db.Query("SELECT Id, FileTitle FROM Photos WHERE GalleryId = @0", galleryId).ToList();
+    var photos = db.Query("SELECT Id, FileTitle, Likes FROM Photos WHERE GalleryId = @0", galleryId).ToList();
 
     Page.Title = "Gallery - " + gallery.Name;
 }
@@ -28,7 +28,7 @@
 </hgroup>
 
 <ul class="thumbnails" data-role="listview">
-    @foreach (var photo in photos)
+    @foreach (var photo in photos.OrderByDescending(p => p.Likes))
     {
         <li>
             <a href="~/Photo/View/@photo.Id" title="View @photo.FileTitle">

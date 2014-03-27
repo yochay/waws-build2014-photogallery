@@ -1,0 +1,12 @@
+﻿@{
+    var db = Database.Open("PhotoGallery");
+    var photoId = Request["photoId"].Trim();
+    var userName = Request["userName"].Trim();
+
+    db.Execute("UPDATE Photos SET Likes = Likes + 1 WHERE Id = @0", photoId);
+    db.Execute("UPDATE GuidUsers SET TotalLikes = TotalLikes + 1 WHERE UserName = @0", userName);
+}
+
+<div>
+    Done
+</div>

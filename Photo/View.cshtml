@@ -1,4 +1,5 @@
-﻿@{
+﻿@using System.Web.Script.Serialization
+@{
     var photoId = UrlData[0];
 
     var db = Database.Open("PhotoGallery");
@@ -15,7 +16,6 @@
     string description = photo.description;
     // Found a match - so show its info
     var gallery = db.QuerySingle("SELECT * FROM Galleries WHERE Id = @0", photo.GalleryId);
-    var tagList = db.Query("SELECT Tags_TagName FROM Photos_Tags WHERE Photos_Id = @0 ORDER BY Tags_TagName", photo.Id);
 }
 
 <h1>@photo.FileTitle</h1>
@@ -43,24 +43,7 @@
         <dd class="upload-date">@photo.UploadDate</dd>
         <dt class="part-of-gallery">Gallery</dt>
         <dd><a href="~/View/@gallery.Id" title="@gallery.Name">@gallery.Name</a></dd>
-        <dt class="tags">Tags</dt>
-        <dd class="tags">
-            <ul class="comma-separated">
-            @if (tagList.Count == 0)
-            {
-                <li>This photo has no tags.</li>
-            }
-            else
-            {
-                foreach (var t in tagList)
-                {
-                    <li><a href="~/Tag/View/@t.Tags_TagName" title="@t.Tags_TagName">@t.Tags_TagName</a></li>
-                }
-            }
-            </ul>
-        </dd>
     </dl>
-        <a href="~/Photo/EditTags/@photoId">edit tags</a>
     <div class="hide-from-mobile">
         <p>
             <a class="download" href="~/Photo/Full" title="Download: @(photo.FileTitle + photo.FileExtension)">Download full photo!</a> (@(photo.FileSize / 1024) KB)
@@ -70,7 +53,7 @@
 
 <div id="photo">
     <img class="large-photo" alt="@Html.AttributeEncode(photo.FileTitle)" src="@Href("~/Photo/Thumbnail", photo.Id, new { size="large" })" />
-    <div>0</div>
-    <a id="Like" href="javascript:LikePhoto(@photo.id)"></a>
+    <div id="number-likes">@photo.Likes</div> 
+    <a id="Like" href="javascript:LikePhoto(@Html.Raw(new JavaScriptSerializer().Serialize(photo.id)), @Html.Raw(new JavaScriptSerializer().Serialize(Request.GetCurrentUser(Response))))">Like</a>
 
 </div>
