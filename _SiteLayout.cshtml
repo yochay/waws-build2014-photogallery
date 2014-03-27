@@ -20,17 +20,9 @@
                 </ul>
             </nav>
             <div id="login">
-                @if (WebSecurity.IsAuthenticated)
-                {
                     <span>
-                        Welcome <strong>@WebSecurity.CurrentUserName</strong>!
-                        <a href="~/Account/Logout" title="Logout">Logout</a>
+                        Welcome <strong>@Request.GetCurrentUser(Response)</strong>!
                     </span>
-                }
-                else
-                {
-                    <a href="~/Account/Login" title="Login">Login</a>
-                }
             </div>
         </header>
         <div id="body">

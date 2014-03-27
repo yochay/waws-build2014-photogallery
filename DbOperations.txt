@@ -13,7 +13,7 @@ SELECT *
     
     ALTER TABLE Galleries DROP CONSTRAINT PK__Galleries__0000000000000040
     ALTER TABLE Galleries DROP COLUMN Id
-    ALTER TABLE Galleries ADD Id uniqueidentifier NOT NULL NN_Galleries_Id DEFAULT '00000000-0000-0000-0000-000000000000'
+    ALTER TABLE Galleries ADD Id uniqueidentifier NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000'
     ALTER TABLE Galleried ADD CONSTRAINT PK__Galleries__0000000000000040 PRIMARY KEY (Id)
     ALTER TABLE Photos ADD CONSTRAINT FK_Photos_GalleryId_Galleries_Id FOREIGN KEY (GalleryId) REFERENCES Galleries(Id)
 
@@ -41,3 +41,15 @@ SELECT *
 
     ALTER TABLE Photos_Tags ADD CONSTRAINT FK_Photos_Tags_Photos_Id_Photos_Id FOREIGN KEY (Photos_Id) REFERENCES Photos(Id);
     ALTER TABLE Comments ADD CONSTRAINT FK_Comments_PhotoId_Photos_Id FOREIGN KEY (PhotoId) REFERENCES Photos(Id);
+
+  Users:
+    ALTER TABLE Photos DROP CONSTRAINT FK_Photos_UserId_UserProfiles_UserId
+    ALTER TABLE Photos DROP COLUMN UserId
+    ALTER TABLE Photos ADD COLUMN UserName uniqueidentifier NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000'
+    ALTER TABLE Photos ADD CONSTRAINT FK_Photos_UserName_GuidUsers_UserName FOREIGN KEY (UserName) REFERENCES GuidUsers(UserName)
+
+    CREATE TABLE GuidUsers
+    (
+      UserName uniqueidentifier PRIMARY KEY,
+      TotalLikes int
+    )

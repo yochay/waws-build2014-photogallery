@@ -37,6 +37,7 @@
             // If successful, continue processing the request
             try 
             {
+                Request.
                 WebSecurity.CreateAccount(email, password);
                 WebSecurity.Login(email, password);
                 Response.Redirect("~/");

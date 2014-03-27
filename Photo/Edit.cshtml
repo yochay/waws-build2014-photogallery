@@ -15,8 +15,6 @@
         return;        
     }
 
-    WebSecurity.RequireUser(photo.UserId);
-
     Page.Title = "Edit Photo - " + photo.FileTitle;
 
     Validation.RequireField("fileTitle", "You must specify a name");
