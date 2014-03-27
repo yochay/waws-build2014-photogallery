@@ -2,7 +2,7 @@
     // Cache the image for a minute
     Response.OutputCache(60);
 
-    var galleryId = UrlData[0].AsInt();
+    var galleryId = UrlData[0];
 
     var db = Database.Open("PhotoGallery");
 

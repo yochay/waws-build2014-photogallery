@@ -1,0 +1,43 @@
+SELECT * 
+  FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS 
+   WHERE TABLE_NAME = 'history'
+
+
+  GalleryId:
+    FK_Photos_GalleryId_Galleries_Id
+    PK__Galleries__0000000000000040
+
+    ALTER TABLE Photos DROP CONSTRAINT FK_Photos_GalleryId_Galleries_Id
+    ALTER TABLE Photos DROP COLUMN GalleryId
+    ALTER TABLE Photos ADD GalleryId uniqueidentifier
+    
+    ALTER TABLE Galleries DROP CONSTRAINT PK__Galleries__0000000000000040
+    ALTER TABLE Galleries DROP COLUMN Id
+    ALTER TABLE Galleries ADD Id uniqueidentifier NOT NULL NN_Galleries_Id DEFAULT '00000000-0000-0000-0000-000000000000'
+    ALTER TABLE Galleried ADD CONSTRAINT PK__Galleries__0000000000000040 PRIMARY KEY (Id)
+    ALTER TABLE Photos ADD CONSTRAINT FK_Photos_GalleryId_Galleries_Id FOREIGN KEY (GalleryId) REFERENCES Galleries(Id)
+
+  PhotoId:
+    FK_Photos_Tags_Photos_Id_Photos_Id ------> Photos_Tags
+    FK_Comments_PhotoId_Photos_Id -----------> Comments
+    PK__Photos__0000000000000028 ------------> Photos
+    PK__Photos_Tags__000000000000004A -------> Photos_Tags
+
+
+    ALTER TABLE Photos_Tags DROP CONSTRAINT FK_Photos_Tags_Photos_Id_Photos_Id;
+    ALTER TABLE Photos_Tags DROP CONSTRAINT PK__Photos_Tags__000000000000004A;
+    ALTER TABLE Photos_Tags DROP COLUMN Photos_Id;
+    ALTER TABLE Photos_Tags ADD Photos_Id uniqueidentifier NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000';
+    ALTER TABLE Photos_Tags ADD CONSTRAINT PK__Photos_Tags__000000000000004A PRIMARY KEY (Photos_Id);
+
+    ALTER TABLE Comments DROP CONSTRAINT FK_Comments_PhotoId_Photos_Id;
+    ALTER TABLE Comments DROP COLUMN PhotoId;
+    ALTER TABLE Comments ADD PhotoId uniqueidentifier NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000';
+
+    ALTER TABLE Photos DROP CONSTRAINT PK__Photos__0000000000000028;
+    ALTER TABLE Photos DROP COLUMN Id;
+    ALTER TABLE Photos ADD Id uniqueidentifier NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000';
+    ALTER TABLE Photos ADD CONSTRAINT PK__Photos__0000000000000028 PRIMARY KEY (Id);
+
+    ALTER TABLE Photos_Tags ADD CONSTRAINT FK_Photos_Tags_Photos_Id_Photos_Id FOREIGN KEY (Photos_Id) REFERENCES Photos(Id);
+    ALTER TABLE Comments ADD CONSTRAINT FK_Comments_PhotoId_Photos_Id FOREIGN KEY (PhotoId) REFERENCES Photos(Id);

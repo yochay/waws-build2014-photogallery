@@ -1,7 +1,7 @@
 ﻿@{
     WebSecurity.RequireAuthenticatedUser();
 
-    var galleryId = UrlData[0].AsInt();
+    var galleryId = UrlData[0];
 
     var db = Database.Open("PhotoGallery");
 
@@ -20,8 +20,9 @@
         {
             ModelState.AddError("fileUpload", "Please specify at least one photo to upload.");
         } 
-        else 
+        else
         {
+            var guid = Guid.Empty;
             for (int i = 0; i < numFiles; i++)
             {
                 var file = Request.Files[i];
@@ -35,13 +36,14 @@
                     }
                     var fileExtension = Path.GetExtension(file.FileName).Trim();
                     var fileBytes = fileUpload.GetBytes();
+                    guid = Guid.NewGuid();
                     db.Execute(@"INSERT INTO Photos
-                        (GalleryId, UserId, Description, FileTitle, FileExtension, ContentType, FileSize, UploadDate, FileContents) VALUES 
-                        (@0, @1, @2, @3, @4, @5, @6, @7, @8)", galleryId, WebSecurity.CurrentUserId, "", fileTitle, fileExtension,
+                        (Id, GalleryId, UserId, Description, FileTitle, FileExtension, ContentType, FileSize, UploadDate, FileContents) VALUES 
+                        (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9)", guid.ToString(), galleryId, WebSecurity.CurrentUserId, "", fileTitle, fileExtension,
                     fileUpload.ImageFormat, fileBytes.Length, DateTime.Now, fileBytes);
                 }
             }
-            Response.Redirect(Href("~/Photo/View", db.GetLastInsertId()));
+            Response.Redirect(Href("~/Photo/View", guid.ToString()));
         }
     }
 }

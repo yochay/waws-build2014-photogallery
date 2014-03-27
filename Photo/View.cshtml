@@ -1,5 +1,5 @@
 ﻿@{
-    var photoId = UrlData[0].AsInt();
+    var photoId = UrlData[0];
 
     var db = Database.Open("PhotoGallery");
 
@@ -95,53 +95,7 @@
 
 <div id="photo">
     <img class="large-photo" alt="@Html.AttributeEncode(photo.FileTitle)" src="@Href("~/Photo/Thumbnail", photo.Id, new { size="large" })" />
-    @switch ((int)comments.Count)
-    {
-        case 0:
-            <h2>Nobody has commented on this photo</h2>
-            break;
-        case 1:
-            <h2>This photo has generated one comment.</h2>
-            break;
-        default:
-            <h2>This photo has generated @comments.Count comments.</h2>
-            break;
-    }
+    <div>0</div>
+    <a id="Like" href="javascript:LikePhoto(@photo.id)"></a>
 
-    <ol class="comments">
-        @foreach (var comment in comments)
-        {
-            <li>
-                <h3 class="comment-header">
-                    <a href="~/User/View/@comment.UserId" title="View @(comment.DisplayName)'s profile">@comment.DisplayName</a> commented at @comment.CommentDate:
-                </h3>
-                <p class="comment-body">@comment.CommentText</p>
-            </li>
-        }
-    </ol>
-
-    @if (WebSecurity.IsAuthenticated)
-    {
-        <form method="post" action="">
-            <fieldset id="addComment">
-                <legend>Post new comment</legend>
-                <ol>
-                    <li>
-                        <label for="newComment">Comment</label>
-                        <textarea id="newComment" name="newComment" title="Your comment" rows="6" cols="70"></textarea>
-                    </li>
-                </ol>
-                <p class="form-actions">
-                    <input type="submit" title="Add comment" value="Add comment" />
-                </p>
-            </fieldset>
-        </form>
-    }
-    else
-    {
-        <p>
-            Only registered user may leave comments. Please <a href="~/Account/Login" title="login">login</a> 
-            or <a href="~/Account/Register" title="create an account">create an account</a> to leave a comment.
-        </p>
-    }
 </div>

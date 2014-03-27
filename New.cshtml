@@ -23,9 +23,10 @@
         else
         {
             //Create Gallery
-            db.Execute("INSERT INTO Galleries (Name) VALUES (@0)", galleryName);
+            var guid = Guid.NewGuid();
+            db.Execute("INSERT INTO Galleries (Id, Name) VALUES (@0, @1)", guid.ToString(), galleryName);
             // And redirect
-            Response.Redirect(Href("View", db.GetLastInsertId()));
+            Response.Redirect(Href("View", guid.ToString()));
         }
     }
 }
